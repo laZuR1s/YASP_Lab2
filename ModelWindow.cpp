@@ -1,6 +1,18 @@
 #include "ModelWindow.h"
 #include<iostream>
 
+ModelWindow::ModelWindow()
+{
+	name_window={};
+	x_cord = {};
+	y_cord = {};
+	width_size={};
+	height_size = {};
+	color_window = {};
+	is_visible = {};
+	is_with_border = {};
+}
+
 ModelWindow::ModelWindow(std::string name_window, int x_cord, int y_cord, int width_size, int height_size, std::string color_window, bool is_visible, bool is_with_border)
 {
 	this->name_window = name_window;
@@ -11,6 +23,43 @@ ModelWindow::ModelWindow(std::string name_window, int x_cord, int y_cord, int wi
 	this->color_window = color_window;
 	this->is_visible = is_visible;
 	this->is_with_border = is_with_border;
+}
+
+ModelWindow::ModelWindow(std::ifstream& file)
+{
+	file >> name_window;
+	file >> x_cord;
+	file >> y_cord;
+	file >> width_size;
+	file >> height_size;
+	file >> color_window;
+	file >> is_visible;
+	file >> is_with_border;
+}
+
+void ModelWindow::fill(std::istream& stream)
+{
+	stream >> name_window;
+	stream >> x_cord;
+	stream >> y_cord;
+	stream >> width_size;
+	stream >> height_size;
+	stream >> color_window;
+	stream >> is_visible;
+	stream >> is_with_border;
+}
+
+void ModelWindow::print(std::ostream& stream)
+{
+	stream << name_window << '\n';
+	stream << x_cord << '\n';
+	stream << y_cord << '\n';
+	stream << width_size << '\n';
+	stream << height_size << '\n';
+	stream << color_window << '\n';
+	stream << is_visible << '\n';
+	stream << is_with_border << '\n';
+
 }
 
 void ModelWindow::move_window_in_X(int move_in_X)
@@ -29,7 +78,7 @@ void ModelWindow::move_window_in_Y(int move_in_Y)
 	if (y_cord + width_size > 1200)
 	{
 		std::cout << "Window is crossed with screen edge\n";
-		y_cord= 1200 - height_size;
+		y_cord = 1200 - height_size;
 	}
 }
 
@@ -118,3 +167,31 @@ bool ModelWindow::is_crossed_with_other_window(ModelWindow other_window)
 
 	return result;
 }
+
+bool operator>(ModelWindow& w1, ModelWindow& w2)
+{
+	return 	 w1.get_height_size() * w1.get_width_size() > w2.get_height_size() * w2.get_width_size();
+}
+
+bool operator<(ModelWindow& w1, ModelWindow& w2)
+{
+	return 	 w1.get_height_size() * w1.get_width_size() < w2.get_height_size() * w2.get_width_size();
+}
+
+bool operator>=(ModelWindow& w1, ModelWindow& w2)
+{
+	return 	 w1.get_height_size() * w1.get_width_size() >= w2.get_height_size() * w2.get_width_size();
+}
+
+bool operator<=(ModelWindow& w1, ModelWindow& w2)
+{
+	return 	 w1.get_height_size() * w1.get_width_size() <= w2.get_height_size() * w2.get_width_size();
+
+}
+
+bool operator==(ModelWindow& w1, ModelWindow& w2)
+{
+	return 	 w1.get_height_size() * w1.get_width_size() == w2.get_height_size() * w2.get_width_size();
+}
+
+
