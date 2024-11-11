@@ -3,10 +3,10 @@
 
 ModelWindow::ModelWindow()
 {
-	name_window={};
+	name_window = {};
 	x_cord = {};
 	y_cord = {};
-	width_size={};
+	width_size = {};
 	height_size = {};
 	color_window = {};
 	is_visible = {};
@@ -132,6 +132,26 @@ void ModelWindow::get_window_conditions()
 
 }
 
+std::string ModelWindow::to_string()
+{
+	std::string result = "";
+	result += name_window + " ";
+	result += std::to_string(x_cord) + " ";
+	result += std::to_string(y_cord) + " ";
+	result += std::to_string(width_size) + " ";
+	result += std::to_string(height_size) + " ";
+	result += color_window + " ";
+	if (is_visible)
+		result += "1 ";
+	else
+		result += "0 ";
+	if (is_with_border)
+		result += "1 ";
+	else
+		result += "0 ";
+	return result;
+}
+
 
 int ModelWindow::get_X_cord()
 {
@@ -168,30 +188,13 @@ bool ModelWindow::is_crossed_with_other_window(ModelWindow other_window)
 	return result;
 }
 
-bool operator>(ModelWindow& w1, ModelWindow& w2)
-{
-	return 	 w1.get_height_size() * w1.get_width_size() > w2.get_height_size() * w2.get_width_size();
-}
 
-bool operator<(ModelWindow& w1, ModelWindow& w2)
-{
-	return 	 w1.get_height_size() * w1.get_width_size() < w2.get_height_size() * w2.get_width_size();
-}
 
-bool operator>=(ModelWindow& w1, ModelWindow& w2)
-{
-	return 	 w1.get_height_size() * w1.get_width_size() >= w2.get_height_size() * w2.get_width_size();
-}
 
-bool operator<=(ModelWindow& w1, ModelWindow& w2)
-{
-	return 	 w1.get_height_size() * w1.get_width_size() <= w2.get_height_size() * w2.get_width_size();
-
-}
 
 bool operator==(ModelWindow& w1, ModelWindow& w2)
 {
-	return 	 w1.get_height_size() * w1.get_width_size() == w2.get_height_size() * w2.get_width_size();
+	return 	 w1.height_size * w1.width_size == w2.height_size * w2.width_size;
 }
 
 

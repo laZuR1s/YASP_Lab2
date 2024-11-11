@@ -5,6 +5,11 @@
 int main_menu();
 int input_menu();
 int output_menu();
+int check_file(std::ifstream& file);
+
+
+template<typename T> 
+T validated_input();
 int main()
 {
 	SetConsoleOutputCP(1251);
@@ -14,8 +19,9 @@ int main()
 	ModelWindow Window1;
 	ModelWindow Window2;
 
+
 	do {
-		choice= main_menu();
+		choice = main_menu();
 		switch (choice)
 		{
 		case 1:
@@ -24,11 +30,22 @@ int main()
 			{
 				std::string file_name;
 				std::cout << "\nВведите имя файла: ";
-				std::cin >> file_name;
+				file_name = validated_input<std::string>();
 				std::ifstream file(file_name);
-				Window1.fill(file);
-				std::cout << "\nДанные получены\n";
 
+				switch (check_file(file))
+				{
+				case -1:
+					std::cout << "Некорректное имя фала\n";
+					break;
+				case 0:
+					std::cout << "Пустой файл\n";
+					break;
+				default:
+					Window1.fill(file);
+					std::cout << "\nДанные получены\n";
+
+				}
 			}
 			else
 			{
@@ -42,10 +59,20 @@ int main()
 			{
 				std::string file_name;
 				std::cout << "\nВведите имя файла: ";
-				std::cin >> file_name;
+				file_name = validated_input<std::string>();
 				std::ifstream file(file_name);
-				Window2.fill(file);
-				std::cout << "\nДанные получены\n";
+				switch (check_file(file))
+				{
+				case -1:
+					std::cout << "Некорректное имя фала\n";
+					break;
+				case 0:
+					std::cout << "Пустой файл\n";
+					break;
+				default:
+					Window2.fill(file);
+					std::cout << "\nДанные получены\n";
+				}
 			}
 			else
 			{
@@ -55,13 +82,13 @@ int main()
 		case 3:
 			std::cout << "\nВведите на сколько вы ходите сдвинуть окно по Х: ";
 			int x;
-			std::cin >> x;
+			x = validated_input<int>();
 			Window1.move_window_in_X(x);
 			break;
 		case 4:
 			std::cout << "\nВведите на сколько вы ходите сдвинуть окно по Y: ";
 			int y;
-			std::cin >> y;
+			y = validated_input<int>();
 			Window1.move_window_in_Y(y);
 			break;
 		case 5:
@@ -73,17 +100,17 @@ int main()
 		case 6:
 			std::cout << "\nВведите новую высоту окна: ";
 			int heigth;
-			std::cin >> heigth;
+			heigth = validated_input<int>();
 			Window1.change_window_height(heigth);
 			break;
 		case 7:
 		{
 			std::cout << "\n Введите новый цвет окна: ";
 			std::string color;
-			std::cin >> color;
+			color = validated_input <std::string>();
 			Window1.change_window_color(color);
 		}
-			break;
+		break;
 		case 8:
 			Window1.get_window_conditions();
 			break;
@@ -93,56 +120,62 @@ int main()
 			{
 				std::string file_name;
 				std::cout << "\nВведите имя файла: ";
-				std::cin >> file_name;
+				file_name = validated_input<std::string>();
 				std::ofstream file(file_name);
-				std::cout << '\n';
-				Window1.print(file);
+				
+					std::cout << '\n';
+					Window1.print(file);
 			}
 			else
 			{
 				std::cout << '\n';
 				Window1.print(std::cout);
-					
+
 			}
 			break;
 		case 10:
+			std::cout << '\n' << Window1.to_string() << '\n';
+			break;
+		case 11:
 			if (Window1.is_crossed_with_other_window(Window2))
 				std::cout << "\nCrossed\n";
 			else
 				std::cout << "\nNot crossed\n";
 			break;
 
-		case 11:
+		case 12:
 			if (Window1 > Window2)
 				std::cout << "\nWindow1 > Window2\n";
 			if (Window1 < Window2)
 				std::cout << "\nWindow1 < Window2\n";
-			if (Window1 >= Window2)
-				std::cout << "\nWindow1 >= Window2\n";
-			if (Window1 <= Window2)
-				std::cout << "\nWindow1 <= Window2\n";
 			if (Window1 == Window2)
 				std::cout << "\nWindow1 == Window2\n";
 			break;
 		}
 
 
-	} while (choice!=12);
+	} while (choice != 13);
 
 }
 
-template<typename T, typename Predicat>
-void validation(T& x, Predicat condition, const char* message)
-{
-	std::cout << message << "\n>>> ";
-	while (!(std::cin >> x && condition(x)))
-	{
-		std::cout << "Ошибка ввода!" << '\n';
-		std::cin.clear();
-		std::cin.ignore(std::cin.rdbuf()->in_avail());
-		std::cout << message << "\n>>> ";
+template<typename T>
+T validated_input() {
+	T data;
+
+	while (true) {
+		std::cin >> data;
+
+		if (std::cin.fail()) {
+			std::cin.clear();
+			std::cin.ignore(std::cin.rdbuf()->in_avail());
+			std::cout << "Ошибка ввода!\n";
+		}
+		else {
+			return data;
+		}
 	}
 }
+
 
 int input_menu()
 {
@@ -150,7 +183,10 @@ int input_menu()
 	std::cout << "1. Заполнить из файла\n";
 	std::cout << "2. Заполнить с клавиатуры\n";
 	int choice;
-	std::cin >> choice;
+	do {
+		std::cout << "\nВведите пункт меню: ";
+		choice = validated_input<int>();
+	} while (!(choice >= 0 && choice <= 2));
 	std::cin.ignore(std::cin.rdbuf()->in_avail());
 	return choice;
 }
@@ -161,9 +197,25 @@ int output_menu()
 	std::cout << "1. Вывод в файл\n";
 	std::cout << "2. Вывод в консоль\n";
 	int choice;
-	std::cin >> choice;
+	do {
+		std::cout << "\nВведите пункт меню: ";
+		choice = validated_input<int>();
+	} while (!(choice >= 0 && choice <= 2));
 	std::cin.ignore(std::cin.rdbuf()->in_avail());
 	return choice;
+}
+
+int check_file(std::ifstream& file)
+{
+	int res = 1;
+	if (!file)
+	{
+		res = -1; 
+	}
+	else
+		if (file.peek() == EOF)
+			res = 0; 
+	return res;
 }
 
 int main_menu()
@@ -181,15 +233,18 @@ int main_menu()
 	std::cout << "7. Изменить цвет окна\n";
 	std::cout << "8. Изменить состояния окна\n";
 	std::cout << "9. Вывести информацию об окне 1\n";
+	std::cout << "10. Вывести информацию об окне 1 в виде строки\n";
 	std::cout << "\n-----------------------------------------------------\n";
-	std::cout << "10. Проверить пересечение окна 1 и окна 2\n";
-	std::cout << "11. Сравнить размеры окна 1 и окна 2\n";
+	std::cout << "11. Проверить пересечение окна 1 и окна 2\n";
+	std::cout << "12. Сравнить размеры окна 1 и окна 2\n";
 	std::cout << "\n-----------------------------------------------------\n";
-	std::cout << "12. Выход\n";
-	std::cout << "-----------------------------------------------------\n";
-	int choice;
-	std::cin >> choice;
-
+	std::cout << "13. Выход\n";
+	std::cout << "-----------------------------------------------------\n"; \
+		int choice;
+	do {
+		std::cout << "\nВведите пункт меню: ";
+		choice = validated_input<int>();
+	} while (!(choice >= 0 && choice <= 13));
 	std::cin.ignore(std::cin.rdbuf()->in_avail());
 	return choice;
 }

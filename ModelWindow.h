@@ -34,13 +34,14 @@ public:
 	std::string get_color_window();
 	void get_window_conditions();
 	
+	std::string to_string();
+
 	bool is_crossed_with_other_window(ModelWindow other_window);
 
 
-	friend bool operator > (ModelWindow& w1, ModelWindow& w2);
-	friend bool operator < (ModelWindow& w1, ModelWindow& w2);
-	friend bool operator >= (ModelWindow& w1, ModelWindow& w2);
-	friend bool operator <= (ModelWindow& w1, ModelWindow& w2);
 	friend bool operator == (ModelWindow& w1, ModelWindow& w2);
+	std::strong_ordering operator<=>(ModelWindow& w2) {
+		return  this->height_size * this->width_size <=> w2.height_size * w2.width_size;
+	}
 
 };
